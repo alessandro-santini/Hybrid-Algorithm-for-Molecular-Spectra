@@ -1,0 +1,19 @@
+[project]
+name = "hybridcqspectra"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "matplotlib>=3.10.1",
+    "netket>=3.16.1.post1",
+    "pyscf>=2.8.0",
+    "qutip>=5.1.1",
+    "seaborn>=0.13.2",
+    "tqdm>=4.67.1",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+]
