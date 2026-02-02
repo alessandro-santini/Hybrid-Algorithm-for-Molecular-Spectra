@@ -13,35 +13,37 @@ This repository contains the implementation of a hybrid classical-quantum algori
 
 ```
 .
-├── src/
-│   ├── python/
-│   │   ├── generate_hamiltonian/    # Hamiltonian generation from PySCF
-│   │   ├── subspace_evolution/      # Main algorithm implementation
-│   │   │   ├── RunAlgorithm.py      # Single molecule evolution
-│   │   │   └── Samples_RunAlgorithm.py  # Scaling analysis
-│   │   └── tensor_network/          # Tensor network methods
-│   │       ├── evolution.py         # TN-based time evolution
-│   │       └── retrieve_data.py     # Data retrieval utilities
-│   └── julia/
-│       ├── DMRG_groundstate.jl      # DMRG ground state solver
-│       ├── QuantumEvolution.jl      # TDVP time evolution
-│       ├── sample_perturbed_state.jl # State sampling
-│       └── MPSutils.jl              # MPS utility functions
-├── plots/
-│   ├── plot_energy_levels.py        # Energy level comparison plots
-│   ├── plot_fourier_spectra.py      # Fourier spectra plots
-│   └── plot_scaling_samples.py      # Scaling analysis plots
-├── data/
-│   ├── plot_data/                   # Extracted data for plots (JSON)
-│   ├── results/                     # Algorithm output (generated)
-│   ├── ground_states/               # DMRG ground states (generated)
-│   ├── sampled/                     # Sampled states (generated)
-│   └── hamiltonians_json/           # Hamiltonians in JSON format for Julia
-├── hamiltonians/                    # Molecular Hamiltonian files (.dat FCIDUMP format)
-├── figures/                         # Generated figures (PDF)
-├── pyproject.toml                   # Python dependencies
-├── Project.toml                     # Julia dependencies
-└── Manifest.toml                    # Julia dependency lock
+├── hybridqc/
+│   ├── src/
+│   │   ├── python/
+│   │   │   ├── generate_hamiltonian/    # Hamiltonian generation from PySCF
+│   │   │   ├── subspace_evolution/      # Main algorithm implementation
+│   │   │   │   ├── RunAlgorithm.py      # Single molecule evolution
+│   │   │   │   └── Samples_RunAlgorithm.py  # Scaling analysis
+│   │   │   └── tensor_network/          # Tensor network methods
+│   │   │       ├── evolution.py         # TN-based time evolution
+│   │   │       └── retrieve_data.py     # Data retrieval utilities
+│   │   └── julia/
+│   │       ├── DMRG_groundstate.jl      # DMRG ground state solver
+│   │       ├── QuantumEvolution.jl      # TDVP time evolution
+│   │       ├── sample_perturbed_state.jl # State sampling
+│   │       └── MPSutils.jl              # MPS utility functions
+│   ├── plots/
+│   │   ├── plot_energy_levels.py        # Energy level comparison plots
+│   │   ├── plot_fourier_spectra.py      # Fourier spectra plots
+│   │   └── plot_scaling_samples.py      # Scaling analysis plots
+│   ├── data/
+│   │   ├── plot_data/                   # Extracted data for plots (JSON)
+│   │   ├── results/                     # Algorithm output (generated)
+│   │   ├── ground_states/               # DMRG ground states (generated)
+│   │   ├── sampled/                     # Sampled states (generated)
+│   │   └── hamiltonians_json/           # Hamiltonians in JSON format for Julia
+│   ├── hamiltonians/                    # Molecular Hamiltonian files (.dat FCIDUMP format)
+│   └── figures/                         # Generated figures (PDF)
+├── pyproject.toml                       # Python dependencies (uv)
+├── uv.lock                              # Python dependency lock (uv)
+├── Project.toml                         # Julia dependencies
+└── Manifest.toml                        # Julia dependency lock
 ```
 
 ## Installation
@@ -69,9 +71,9 @@ All plots can be regenerated from the extracted data:
 
 ```bash
 # Using uv
-uv run python plots/plot_energy_levels.py
-uv run python plots/plot_fourier_spectra.py
-uv run python plots/plot_scaling_samples.py
+uv run python hybridqc/plots/plot_energy_levels.py
+uv run python hybridqc/plots/plot_fourier_spectra.py
+uv run python hybridqc/plots/plot_scaling_samples.py
 ```
 
 ### Molecules Studied
@@ -88,10 +90,10 @@ uv run python plots/plot_scaling_samples.py
 
 ### Running the Full Algorithm (Python - exact diagonalization)
 
-The main algorithm can be run from `src/python/subspace_evolution/`:
+The main algorithm can be run from `hybridqc/src/python/subspace_evolution/`:
 
 ```bash
-cd src/python/subspace_evolution
+cd hybridqc/src/python/subspace_evolution
 uv run python RunAlgorithm.py <molecule_index>
 ```
 
@@ -102,7 +104,7 @@ Where `molecule_index` is 0-7 corresponding to:
 - 3: HCl (sto-6g, 10 orbitals)
 - 4-7: Alternative perturbations for the same molecules
 
-Results are saved to `data/results/`.
+Results are saved to `hybridqc/data/results/`.
 
 ### Running with Tensor Networks (Julia - for larger systems)
 
@@ -110,36 +112,36 @@ The tensor network approach uses DMRG for ground states and TDVP for time evolut
 
 **Step 1: Convert Hamiltonians to JSON format**
 ```bash
-cd src/python/generate_hamiltonian
+cd hybridqc/src/python/generate_hamiltonian
 uv run python convert_fcidump_to_json.py
 ```
-This converts all `.dat` files in `hamiltonians/` to JSON format in `data/hamiltonians_json/`.
+This converts all `.dat` files in `hybridqc/hamiltonians/` to JSON format in `hybridqc/data/hamiltonians_json/`.
 
 **Step 2: Compute the ground state with DMRG**
 ```bash
-cd src/julia
-julia --project=../.. DMRG_groundstate.jl <molecule> <basis> <n_electrons> <n_orbitals> <R>
+cd hybridqc/src/julia
+julia --project=../../.. DMRG_groundstate.jl <molecule> <basis> <n_electrons> <n_orbitals> <R>
 ```
-Output: `data/ground_states/<molecule>_<basis>_<no>o<ne>e_R<R>.jld2`
+Output: `hybridqc/data/ground_states/<molecule>_<basis>_<no>o<ne>e_R<R>.jld2`
 
 **Step 3: Sample the perturbed state**
 ```bash
-julia --project=../.. sample_perturbed_state.jl <molecule> <basis> <n_electrons> <n_orbitals> <R> <n_samples>
+julia --project=../../.. sample_perturbed_state.jl <molecule> <basis> <n_electrons> <n_orbitals> <R> <n_samples>
 ```
-Output: `data/sampled/<molecule>_.../perturbed_state_nsamples<n>.jld2`
+Output: `hybridqc/data/sampled/<molecule>_.../perturbed_state_nsamples<n>.jld2`
 
 **Step 4: Run TDVP time evolution**
 ```bash
-julia --project=../.. QuantumEvolution.jl <molecule> <basis> <n_electrons> <n_orbitals> <R> <start_idx> <end_idx>
+julia --project=../../.. QuantumEvolution.jl <molecule> <basis> <n_electrons> <n_orbitals> <R> <start_idx> <end_idx>
 ```
 This evolves sampled states from index `start_idx` to `end_idx` and saves the evolved basis states.
 
 **Example (LiH with 6-31g basis):**
 ```bash
-cd src/julia
-julia --project=../.. DMRG_groundstate.jl LiH 6-31g 4 10 1.5
-julia --project=../.. sample_perturbed_state.jl LiH 6-31g 4 10 1.5 1000000
-julia --project=../.. QuantumEvolution.jl LiH 6-31g 4 10 1.5 1 100
+cd hybridqc/src/julia
+julia --project=../../.. DMRG_groundstate.jl LiH 6-31g 4 10 1.5
+julia --project=../../.. sample_perturbed_state.jl LiH 6-31g 4 10 1.5 1000000
+julia --project=../../.. QuantumEvolution.jl LiH 6-31g 4 10 1.5 1 100
 ```
 
 ## Methods
