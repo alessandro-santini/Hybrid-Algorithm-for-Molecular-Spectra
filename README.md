@@ -167,3 +167,9 @@ Julia implementations using ITensors for:
 This project is licensed under the [Creative Commons Attribution 4.0 International License (CC BY 4.0)](http://creativecommons.org/licenses/by/4.0/).
 
 You are free to share and adapt this work for any purpose, provided you give appropriate credit.
+
+## Citation
+
+[![arXiv](https://img.shields.io/badge/arXiv-2510.24911-b31b1b.svg)](https://arxiv.org/abs/2510.24911)
+
+A. Santini, S. Barison, F. Vicentini, "Classically Prepared, Quantumly Evolved: Hybrid Algorithm for Molecular Spectra", [arXiv:2510.24911](https://arxiv.org/abs/2510.24911) (2025)
